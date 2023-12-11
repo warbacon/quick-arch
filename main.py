@@ -1,3 +1,4 @@
+import subprocess
 import os
 
 profiles: dict = {1: "Gnome", 2: "KDE Plasma (BETA)"}
@@ -21,29 +22,36 @@ while profile == 0:
             print("Enter a valid number [1-2]")
 
 
-packages_list: list = []
-packages_file: str = ""
+packages: list = []
+profile_file: str = ""
 display_manager: str = ""
 match profile:
     case 1:
         print(f"You selected {profiles[1]}")
-        packages_file = "gnome_packages.txt"
+        profile_file = "gnome_packages.txt"
         display_manager = "gdm"
     case 2:
         print(f"You selected {profiles[2]}")
-        packages_file = "plasma_packages.txt"
+        profile_file = "plasma_packages.txt"
         display_manager = "sddm"
     case _:
         print("An error has ocurred")
 
-if os.path.exists(packages_file):
-    with open(packages_file) as f:
-       for line in f:
-           packages_list.append(line.rstrip())
+if os.path.exists(profile_file):
+    with open(profile_file) as f:
+        for line in f:
+            packages.append(line.rstrip())
 else:
-    print(f"File {packages_file} does not exist")
+    print(f"File {profile_file} does not exist")
     exit(1)
 
-packages: str = " ".join(packages_list)
-os.system(f"sudo pacman -S {packages} {display_manager}")
-os.system(f"sudo systemctl enable {display_manager}")
+subprocess.run(["sudo", "pacman", "-S", *packages, display_manager])
+subprocess.run(["sudo", "systemctl", "enable", display_manager])
+
+match subprocess.run("systemd-detect-virt", capture_output=True).stdout.decode():
+    case "vmware":
+        subprocess.run(["sudo", "pacman", "-S", "open-vm-tools", "gtkmm3"])
+        subprocess.run(["sudo", "systemctl", "enable", "vmtoolsd.service"])
+    case "oracle":
+        subprocess.run(["sudo", "pacman", "-S", "virtualbox-guest-utils"])
+        subprocess.run(["sudo", "systemctl", "enable", "vboxservice.service"])

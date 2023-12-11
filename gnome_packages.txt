@@ -1,5 +1,4 @@
 evince
-gdm
 gnome-backgrounds
 gnome-calculator
 gnome-characters
