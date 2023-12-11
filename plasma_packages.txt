@@ -1,3 +1,10 @@
+breeze-gtk
 dolphin
+kde-gtk-config
 konsole
 plasma-desktop
+plasma-nm
+plasma-pa
+sddm-kcm
+xdg-desktop-portal-gtk
+xdg-desktop-portal-kde
