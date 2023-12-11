@@ -2,7 +2,7 @@ breeze-gtk
 dolphin
 ffmpegthumbs
 kde-gtk-config
-kdegraphics-thumbnailer
+kdegraphics-thumbnailers
 kio-gdrive
 konsole
 kscreen
