@@ -82,11 +82,14 @@ match selection:
         home_dir = os.environ["HOME"]
 
         # neovim config
-        nvim_dependencies: list = ["nodejs-lts-iron", "npm", "gcc", "fd"]
+        nvim_dependencies: list = ["nodejs-lts-iron", "npm", "gcc", "fd", "unzip"]
         subprocess.run(["sudo", "pacman", "-S", *nvim_dependencies])
 
         if not os.path.exists(f"{home_dir}/.config"):
             os.mkdir(f"{home_dir}/.config")
+
+        if not os.path.exists(f"{home_dir}/.config/nvim"):
+            os.rmdir(f"{home_dir}/.config/nvim")
 
         subprocess.run(
             [
@@ -98,7 +101,10 @@ match selection:
         )
 
         # zunder-zsh
-        subprocess.run(["git", "clone", "https://github.com/Warbacon/zunder-zsh"])
+        if not os.path.exists(f"{home_dir}/.config/zunder-zsh"):
+            subprocess.run(["git", "clone", "https://github.com/Warbacon/zunder-zsh"])
+        else:
+            subprocess.run(["git", "pull"], cwd="zunder-zsh")
         subprocess.run("./zunder-zsh/install.sh")
     case _:
         print("No baconize :(")
