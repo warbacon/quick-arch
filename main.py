@@ -3,9 +3,11 @@ import os
 
 profiles: dict = {1: "Gnome", 2: "KDE Plasma (BETA)"}
 
+# Show available profiles
 for profile_number, profile_name in profiles.items():
     print(f"{profile_number}. {profile_name}")
 
+# Profile selection
 selection: str = ""
 profile: int = 0
 
@@ -37,6 +39,7 @@ match profile:
     case _:
         print("An error has ocurred")
 
+# Read packages from profile_file
 if os.path.exists(profile_file):
     with open(profile_file) as f:
         for line in f:
@@ -45,13 +48,27 @@ else:
     print(f"File {profile_file} does not exist")
     exit(1)
 
-subprocess.run(["sudo", "pacman", "-S", *packages, display_manager])
+# Install packages
+if subprocess.run(["sudo", "pacman", "-S", *packages, display_manager]).returncode != 0:
+    exit(1)
+
+# Enable display manager
 subprocess.run(["sudo", "systemctl", "enable", display_manager])
 
-match subprocess.run("systemd-detect-virt", capture_output=True).stdout.decode():
+# Configure virtual machine
+virt_system: str = subprocess.run(
+    "systemd-detect-virt", capture_output=True
+).stdout.decode()
+
+virt_packages: list = []
+virt_service: str = ""
+match virt_system:
     case "vmware":
-        subprocess.run(["sudo", "pacman", "-S", "open-vm-tools", "gtkmm3"])
-        subprocess.run(["sudo", "systemctl", "enable", "vmtoolsd.service"])
+        virt_packages = ["open-vm-tools", "gtkmm3"]
+        virt_service = "vmtoolsd.service"
     case "oracle":
-        subprocess.run(["sudo", "pacman", "-S", "virtualbox-guest-utils"])
-        subprocess.run(["sudo", "systemctl", "enable", "vboxservice.service"])
+        virt_packages = ["virtualbox-guest-utils"]
+        virt_service = "vboxservice.service"
+
+if subprocess.run(["sudo", "pacman", "-S", *virt_packages]).returncode == 0:
+    subprocess.run(["sudo", "systemctl", "enable", virt_service])
