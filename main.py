@@ -91,7 +91,7 @@ match selection:
         if not os.path.exists(f"{home_dir}/.config"):
             os.mkdir(f"{home_dir}/.config")
 
-        if not os.path.exists(f"{home_dir}/.config/nvim"):
+        if os.path.exists(f"{home_dir}/.config/nvim"):
             os.rmdir(f"{home_dir}/.config/nvim")
 
         subprocess.run(
