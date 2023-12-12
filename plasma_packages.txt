@@ -3,6 +3,7 @@ dolphin
 ffmpegthumbs
 kde-gtk-config
 kdegraphics-thumbnailers
+kdeplasma-addons
 kio-gdrive
 konsole
 kscreen
