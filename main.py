@@ -75,39 +75,3 @@ match virt_system:
 
 if subprocess.run(["sudo", "pacman", "-S", *virt_packages]).returncode == 0:
     subprocess.run(["sudo", "systemctl", "enable", VIRT_SERVICE])
-
-# Baconize :)
-print("Baconize? [y/N]:", end=" ")
-selection = input()
-
-match selection:
-    case "y" | "Y":
-        home_dir = os.environ["HOME"]
-
-        # neovim config
-        nvim_dependencies: list = ["nodejs-lts-iron", "npm", "gcc", "fd", "unzip"]
-        subprocess.run(["sudo", "pacman", "-S", *nvim_dependencies])
-
-        if not os.path.exists(f"{home_dir}/.config"):
-            os.mkdir(f"{home_dir}/.config")
-
-        if os.path.exists(f"{home_dir}/.config/nvim"):
-            os.rmdir(f"{home_dir}/.config/nvim")
-
-        subprocess.run(
-            [
-                "git",
-                "clone",
-                "https://github.com/Warbacon/nvim-config",
-                f"{home_dir}/.config/nvim",
-            ]
-        )
-
-        # zunder-zsh
-        if not os.path.exists(f"{home_dir}/.config/zunder-zsh"):
-            subprocess.run(["git", "clone", "https://github.com/Warbacon/zunder-zsh"])
-        else:
-            subprocess.run(["git", "pull"], cwd="zunder-zsh")
-        subprocess.run("./zunder-zsh/install.sh")
-    case _:
-        print("No baconize :(")
