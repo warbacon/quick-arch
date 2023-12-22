@@ -4,7 +4,7 @@ import os
 import subprocess
 import sys
 
-profiles: dict = {1: "Gnome", 2: "KDE Plasma (BETA)"}
+profiles: dict = {1: "Gnome", 2: "KDE Plasma"}
 
 # Show available profiles
 for profile_number, profile_name in profiles.items():
