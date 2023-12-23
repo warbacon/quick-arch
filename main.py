@@ -42,7 +42,7 @@ match PROFILE:
         print(f"You selected {profiles[2]}")
         PROFILE_FILE = "plasma_packages.txt"
         DISPLAY_MANAGER = "sddm"
-        with open("/etc/sddm.conf", "w") as f:
+        with open("/etc/sddm.conf", "w", encoding="utf8") as f:
             f.write("[Theme]\nCurrent=breeze")
     case _:
         print("An error has ocurred")
