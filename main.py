@@ -59,9 +59,9 @@ if subprocess.run(["sudo", "pacman", "-S", *packages, DISPLAY_MANAGER]).returnco
 subprocess.run(["sudo", "systemctl", "enable", DISPLAY_MANAGER])
 
 # Configure virtual machine
-virt_system: str = subprocess.run(
-    "systemd-detect-virt", capture_output=True
-).stdout.decode()
+virt_system: str = (
+    subprocess.run("systemd-detect-virt", capture_output=True).stdout.decode().rstrip()
+)
 
 virt_packages: list = []
 VIRT_SERVICE: str = ""
