@@ -4,6 +4,9 @@ import os
 import subprocess
 import sys
 
+if os.geteuid() != 0:
+    exit("You need to have root privileges to run this script.")
+
 profiles: dict = {1: "Gnome", 2: "KDE Plasma"}
 
 # Show available profiles
@@ -39,6 +42,8 @@ match PROFILE:
         print(f"You selected {profiles[2]}")
         PROFILE_FILE = "plasma_packages.txt"
         DISPLAY_MANAGER = "sddm"
+        with open("/etc/sddm.conf", "w") as f:
+            f.write("[Theme]\nCurrent=breeze")
     case _:
         print("An error has ocurred")
 
@@ -52,11 +57,11 @@ else:
     sys.exit(1)
 
 # Install packages
-if subprocess.run(["sudo", "pacman", "-S", *packages, DISPLAY_MANAGER]).returncode != 0:
+if subprocess.run(["pacman", "-S", *packages, DISPLAY_MANAGER]).returncode != 0:
     sys.exit(1)
 
 # Enable display manager
-subprocess.run(["sudo", "systemctl", "enable", DISPLAY_MANAGER])
+subprocess.run(["systemctl", "enable", DISPLAY_MANAGER])
 
 # Configure virtual machine
 virt_system: str = (
@@ -73,5 +78,5 @@ match virt_system:
         virt_packages = ["virtualbox-guest-utils"]
         VIRT_SERVICE = "vboxservice.service"
 
-if subprocess.run(["sudo", "pacman", "-S", *virt_packages]).returncode == 0:
-    subprocess.run(["sudo", "systemctl", "enable", VIRT_SERVICE])
+if subprocess.run(["pacman", "-S", *virt_packages]).returncode == 0:
+    subprocess.run(["systemctl", "enable", VIRT_SERVICE])
