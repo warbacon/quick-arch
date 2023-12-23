@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 if os.geteuid() != 0:
-    exit("You need to have root privileges to run this script.")
+    sys.exit("You need to have root privileges to run this script.")
 
 profiles: dict = {1: "Gnome", 2: "KDE Plasma"}
 
