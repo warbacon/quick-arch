@@ -1,17 +1,19 @@
 #!/bin/python3
 
 import os
-import subprocess
 import sys
+import utils
+
+SCRIPT_DIR = os.path.dirname(__file__)
 
 if os.geteuid() != 0:
     sys.exit("You need to have root privileges to run this script.")
 
-profiles: dict = {1: "Gnome", 2: "KDE Plasma"}
+profiles: list = ["Gnome", "KDE Plasma"]
 
 # Show available profiles
-for profile_number, profile_name in profiles.items():
-    print(f"{profile_number}. {profile_name}")
+for profile_number, profile in enumerate(profiles, start=1):
+    print(f"{profile_number}. {profile}")
 
 # Profile selection
 selection: str = ""
@@ -21,62 +23,61 @@ while PROFILE == 0:
     print('Select a profile (enter "c" to cancel):', end=" ")
     selection: str = input()
 
-    if selection.isdigit() and int(selection) in profiles:
+    if selection.isdigit() and int(selection) in range(1, len(profiles) + 1):
         PROFILE = int(selection)
     else:
         if selection == "c":
             sys.exit(1)
         else:
-            print("Enter a valid number [1-2]")
+            print(f"Enter a valid number [1-{len(profiles)}]")
 
 
-packages: list = []
+package_list: list = []
 PROFILE_FILE: str = ""
 DISPLAY_MANAGER: str = ""
 match PROFILE:
     case 1:
-        print(f"You selected {profiles[1]}")
+        print(f"You selected {profiles[0]}")
         PROFILE_FILE = "gnome_packages.txt"
         DISPLAY_MANAGER = "gdm"
     case 2:
-        print(f"You selected {profiles[2]}")
+        print(f"You selected {profiles[1]}")
         PROFILE_FILE = "plasma_packages.txt"
         DISPLAY_MANAGER = "sddm"
         with open("/etc/sddm.conf", "w", encoding="utf8") as f:
             f.write("[Theme]\nCurrent=breeze")
     case _:
-        print("An error has ocurred")
+        sys.exit("An error has ocurred.")
 
 # Read packages from profile_file
-if os.path.exists(PROFILE_FILE):
-    with open(PROFILE_FILE, encoding="utf8") as f:
+PROFILE_PATH=f"{SCRIPT_DIR}/profiles/{PROFILE_FILE}"
+if os.path.exists(PROFILE_PATH):
+    with open(PROFILE_PATH, encoding="utf8") as f:
         for line in f:
-            packages.append(line.rstrip())
+            package_list.append(line.rstrip())
 else:
     print(f"File {PROFILE_FILE} does not exist")
     sys.exit(1)
 
 # Install packages
-if subprocess.run(["pacman", "-S", *packages, DISPLAY_MANAGER]).returncode != 0:
+if utils.install_packages([*package_list, DISPLAY_MANAGER]) != 0:
     sys.exit(1)
 
 # Enable display manager
-subprocess.run(["systemctl", "enable", DISPLAY_MANAGER])
+utils.enable_services([DISPLAY_MANAGER])
 
 # Configure virtual machine
-virt_system: str = (
-    subprocess.run("systemd-detect-virt", capture_output=True).stdout.decode().rstrip()
-)
-
 virt_packages: list = []
 VIRT_SERVICE: str = ""
-match virt_system:
+match utils.virt_system():
     case "vmware":
         virt_packages = ["open-vm-tools", "gtkmm3"]
-        VIRT_SERVICE = "vmtoolsd.service"
+        VIRT_SERVICE = "vmtoolsd"
     case "oracle":
         virt_packages = ["virtualbox-guest-utils"]
-        VIRT_SERVICE = "vboxservice.service"
+        VIRT_SERVICE = "vboxservice"
+    case _:
+        sys.exit(0)
 
-if subprocess.run(["pacman", "-S", *virt_packages]).returncode == 0:
-    subprocess.run(["systemctl", "enable", VIRT_SERVICE])
+if utils.install_packages(virt_packages) == 0:
+    utils.enable_services([VIRT_SERVICE])

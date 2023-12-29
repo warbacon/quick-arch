@@ -8,10 +8,10 @@ your system.
 
 ## Intructions
 
-1. Install git and python:
+1. Install git:
 
     ```sh
-    sudo pacman -S --needed --no-confirm git python
+    sudo pacman -S --needed --no-confirm git
     ```
 
 2. Clone this repository:
@@ -20,8 +20,8 @@ your system.
     git clone https://github.com/warbacon/quick-arch.git
     ```
 
-3. Enter the cloned repository and run the script as root:
+3. Run the script:
 
     ```sh
-    cd quick-arch; sudo ./main.py
+    ./quick-arch/run.sh
     ```
