@@ -9,7 +9,7 @@ else
 fi
 
 if ! command -v "python" >/dev/null 2>&1; then
-  $sudo pacman -S --no-confirm python
+  $sudo pacman -S --noconfirm python
 fi
 
 $sudo python "$SCRIPT_DIR/src/quick_arch.py"
