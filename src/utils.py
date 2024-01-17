@@ -9,8 +9,11 @@ def install_packages(packages: list) -> int:
 
 def enable_services(services: list) -> int:
     """Enables a list of systemd services."""
-    cmd = subprocess.run(["systemctl", "enable", *f"{services}.service"])
-    return cmd.returncode
+    for service in services:
+        cmd = subprocess.run(["systemctl", "enable", f"{service}.service"])
+        if cmd.returncode != 0:
+            return cmd.returncode
+    return 0
 
 
 def virt_system() -> str:
