@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 install_package() {
-    sudo pacman -S --needed "$@"
+    sudo pacman -S --needed --noconfirm "$@"
 }
 
 install_general() {
