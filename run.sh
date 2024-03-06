@@ -44,9 +44,11 @@ install_gnome() {
 
 install_plasma() {
     local packages=(
+        bluedevil
         breeze-gtk
         dolphin
         ffmpegthumbs
+        flatpak-kcm
         kde-gtk-config
         kdegraphics-thumbnailers
         kdeplasma-addons
@@ -57,7 +59,6 @@ install_plasma() {
         plasma-desktop
         plasma-nm
         plasma-pa
-        plasma-wayland-session
         sddm-kcm
         xdg-desktop-portal-gtk
         xdg-desktop-portal-kde
@@ -67,10 +68,6 @@ install_plasma() {
     install_package "${packages[@]}"
     install_package sddm
     sudo systemctl enable sddm.service
-    sudo tee -a /etc/sddm.conf >/dev/null <<EOF
-[Theme]
-Current=breeze
-EOF
 }
 
 install_hyprland() {
