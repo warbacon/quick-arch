@@ -1,7 +1,0 @@
-dunst
-hyprland
-hyprpaper
-otf-font-awesome
-waybar
-wofi
-xdg-desktop-portal-hyprland
