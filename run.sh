@@ -4,7 +4,7 @@ install_package() {
     sudo pacman -S --needed --noconfirm "$@"
 }
 
-install_general() {
+general_config() {
     local packages=(
         wl-clipboard
         power-profiles-daemon
@@ -114,9 +114,14 @@ main() {
 
     SELECTED_PROFILE="$(gum choose 'Gnome' 'KDE Plasma' 'Hyprland')"
 
-    [[ -n "$SELECTED_PROFILE" ]] && echo "You selected $SELECTED_PROFILE."
+    if [[ -z "$SELECTED_PROFILE" ]]; then
+        echo "You must select a profile."
+        exit 1
+    fi
 
-    install_general
+    echo "You selected $SELECTED_PROFILE."
+
+    general_config
 
     case "$SELECTED_PROFILE" in
         "Gnome")
@@ -142,7 +147,7 @@ main() {
     fi
 
     if [[ "$gum_was_installed" != true ]]; then
-        sudo pacman -Rns gum
+        sudo pacman -Rns --noconfirm gum
     fi
 }
 
